@@ -1,0 +1,72 @@
+<div class="register-wrapper">
+  <div class="register-card">
+    <h2>{{ texts.UI.TITLE }}</h2>
+
+    <form (ngSubmit)="onSubmit()">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">{{ texts.UI.FIRST_NAME_LABEL }}</label>
+          <input
+            type="text"
+            id="firstName"
+            name="firstName"
+            [ngModel]="firstName()"
+            (ngModelChange)="firstName.set($event)"
+            [disabled]="loading()">
+        </div>
+        <div class="form-group">
+          <label for="lastName">{{ texts.UI.LAST_NAME_LABEL }}</label>
+          <input
+            type="text"
+            id="lastName"
+            name="lastName"
+            [ngModel]="lastName()"
+            (ngModelChange)="lastName.set($event)"
+            [disabled]="loading()">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">{{ texts.UI.EMAIL_LABEL }}</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          required
+          [ngModel]="email()"
+          (ngModelChange)="email.set($event)"
+          [disabled]="loading()">
+      </div>
+
+      <div class="form-group">
+        <label for="password">{{ texts.UI.PASSWORD_LABEL }}</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          required
+          minlength="6"
+          [ngModel]="password()"
+          (ngModelChange)="password.set($event)"
+          [disabled]="loading()">
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary"
+        [disabled]="loading()">
+        @if (loading()) {
+          {{ texts.UI.SUBMIT_BTN_LOADING }}
+        } @else {
+          {{ texts.UI.SUBMIT_BTN }}
+        }
+      </button>
+    </form>
+
+    <div class="login-link">
+      {{ texts.UI.HAS_ACCOUNT }}
+      <a routerLink="/login">{{ texts.UI.LOGIN_LINK }}</a>
+    </div>
+  </div>
+</div>
