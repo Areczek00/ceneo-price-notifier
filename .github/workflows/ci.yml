@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [ main_AK ]
+  pull_request:
+    branches: [ main_AK ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: temurin
+
+      - name: Build & test auth-service
+        run: mvn -B test
+        working-directory: auth-service
+
+      - name: Build & test price-processor
+        run: mvn -B test
+        working-directory: price-processor
