@@ -1,13 +1,13 @@
-package com.priceprocessor.controllers;
+package com.authservice.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.priceprocessor.dtos.auth.AuthenticationRequest;
-import com.priceprocessor.dtos.auth.AuthenticationResponse;
-import com.priceprocessor.dtos.auth.RegisterRequest;
-import com.priceprocessor.exceptions.InvalidCredentialsException;
-import com.priceprocessor.exceptions.UserAlreadyExistsException;
-import com.priceprocessor.services.AuthenticationService;
-import com.priceprocessor.services.JwtService;
+import com.authservice.dtos.auth.AuthenticationRequest;
+import com.authservice.dtos.auth.AuthenticationResponse;
+import com.authservice.dtos.auth.RegisterRequest;
+import com.authservice.exceptions.InvalidCredentialsException;
+import com.authservice.exceptions.UserAlreadyExistsException;
+import com.authservice.services.AuthenticationService;
+import com.authservice.services.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,9 +33,6 @@ class AuthenticationControllerTest {
 
     @MockitoBean
     private AuthenticationService service;
-
-    @MockitoBean
-    private JwtService jwtService;
 
     @Autowired
     private ObjectMapper objectMapper;

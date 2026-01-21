@@ -1,5 +1,6 @@
-package com.priceprocessor.models;
+package com.authservice.models;
 
+import com.authservice.models.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

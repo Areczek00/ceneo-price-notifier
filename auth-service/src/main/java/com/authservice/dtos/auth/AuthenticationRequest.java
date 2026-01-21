@@ -1,4 +1,4 @@
-package com.priceprocessor.dtos.auth;
+package com.authservice.dtos.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

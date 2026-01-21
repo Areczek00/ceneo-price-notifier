@@ -1,4 +1,4 @@
-package com.priceprocessor.exceptions;
+package com.authservice.exceptions;
 
 public class InvalidCredentialsException extends RuntimeException {
     public InvalidCredentialsException() {

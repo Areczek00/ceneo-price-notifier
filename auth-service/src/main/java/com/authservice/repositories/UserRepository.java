@@ -1,6 +1,6 @@
-package com.priceprocessor.repositories;
+package com.authservice.repositories;
 
-import com.priceprocessor.models.User;
+import com.authservice.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

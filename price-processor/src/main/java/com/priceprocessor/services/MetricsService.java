@@ -27,28 +27,10 @@ public class MetricsService {
     private static final String ACTION_ADDED = "added";
     private static final String ACTION_DELETED = "deleted";
 
-    public void incrementScraperError(String reason) {
-        Counter.builder(SCRAPER_ERRORS_METRIC)
-                .tag(TAG_KEY_STATUS, STATUS_FAILURE)
-                .tag(TAG_KEY_REASON, reason)
-                .register(meterRegistry)
-                .increment();
-    }
-
-    public void incrementLoginSuccess() {
-        incrementMetric(STATUS_SUCCESS, REASON_NONE, AUTH_LOGIN_METRIC);
-    }
+    public void incrementScraperError(String reason) { incrementMetric(STATUS_FAILURE, reason, SCRAPER_ERRORS_METRIC); }
 
     public void incrementLoginFailure(String reason) {
         incrementMetric(STATUS_FAILURE, reason, AUTH_LOGIN_METRIC);
-    }
-
-    public void incrementRegisterSuccess() {
-        incrementMetric(STATUS_SUCCESS, REASON_NONE, AUTH_REGISTER_METRIC);
-    }
-
-    public void incrementRegisterFailure(String reason) {
-        incrementMetric(STATUS_FAILURE, reason, AUTH_REGISTER_METRIC);
     }
 
     public void incrementMailQueueSuccess() {

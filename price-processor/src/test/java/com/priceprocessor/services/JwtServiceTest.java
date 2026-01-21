@@ -1,15 +1,21 @@
 package com.priceprocessor.services;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.security.Key;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,8 +26,9 @@ class JwtServiceTest {
 
     private JwtService jwtService;
 
-    @Mock
-    private UserDetails userDetails;
+    private Key signingKey;
+
+    private String username;
 
     private static final String SECRET_KEY = "NDIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=";
     private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 godzina
@@ -29,18 +36,39 @@ class JwtServiceTest {
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
+        username = "user@test.com";
         ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_KEY);
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", EXPIRATION_TIME);
+        signingKey = Keys.hmacShaKeyFor(
+                Decoders.BASE64.decode(SECRET_KEY)
+        );    }
+
+    private String generateValidToken(long milis) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("roles", List.of("ROLE_USER"))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + milis))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
     }
 
+    private String generateValidToken(Map<String, Object> claims) {
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject("adminUser")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 60000))
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+
     @Test
-    void shouldGenerateToken_AndExtractUsername() {
+    void shouldExtractUsername() {
         // Arrange
-        String username = "testUser";
-        when(userDetails.getUsername()).thenReturn(username);
+        String token = generateValidToken(60000);
 
         // Act
-        String token = jwtService.generateToken(userDetails);
         String extractedUsername = jwtService.extractUsername(token);
 
         // Assert
@@ -49,69 +77,62 @@ class JwtServiceTest {
     }
 
     @Test
-    void shouldValidateToken_WhenTokenIsValidAndUserMatches() {
-        // Arrange
-        String username = "testUser";
-        when(userDetails.getUsername()).thenReturn(username);
+    void shouldExtractRoles() {
 
-        String token = jwtService.generateToken(userDetails);
+        String token = generateValidToken(60000);
 
-        // Act
-        boolean isValid = jwtService.isTokenValid(token, userDetails);
+        List<String> roles = jwtService.extractRoles(token);
 
-        // Assert
-        assertThat(isValid).isTrue();
+        assertThat(roles).containsExactly("ROLE_USER");
     }
 
     @Test
-    void shouldInvalidateToken_WhenUsernameDoesNotMatch() {
+    void shouldValidateToken_whenNotExpired() {
         // Arrange
-        when(userDetails.getUsername()).thenReturn("user1");
+        String token = generateValidToken(60000);
 
-        String token = jwtService.generateToken(userDetails);
+        // Assert
+        assertThat(jwtService.isTokenValid(token)).isTrue();    }
 
-        UserDetails otherUser = org.mockito.Mockito.mock(UserDetails.class);
-        when(otherUser.getUsername()).thenReturn("user2");
+    @Test
+    void shouldInvalidateExpiredToken() {
+        // Arrange
+        String token = generateValidToken(-1000);
 
         // Act
-        boolean isValid = jwtService.isTokenValid(token, otherUser);
+        boolean isValid = jwtService.isTokenValid(token);
 
         // Assert
         assertThat(isValid).isFalse();
     }
 
+
     @Test
-    void shouldExtractCustomClaims() {
-        // Arrange
-        String username = "adminUser";
-        when(userDetails.getUsername()).thenReturn(username);
+    void shouldThrowException_whenTokenIsTampered() {
+        String token = generateValidToken(60000) + "tampered";
 
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("role", "ADMIN");
-        extraClaims.put("id", 123);
-
-        // Act
-        String token = jwtService.generateToken(extraClaims, userDetails);
-
-        String extractedRole = jwtService.extractClaim(token, claims -> claims.get("role", String.class));
-        Integer extractedId = jwtService.extractClaim(token, claims -> claims.get("id", Integer.class));
-
-        // Assert
-        assertThat(extractedRole).isEqualTo("ADMIN");
-        assertThat(extractedId).isEqualTo(123);
+        assertThatThrownBy(() -> jwtService.extractUsername(token))
+                .isInstanceOf(io.jsonwebtoken.JwtException.class);
     }
 
     @Test
-    void shouldDetectExpiredToken() {
+    void shouldExtractCustomClaims() {
         // Arrange
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", -1000L);
+        Map<String, Object> extraClaims = Map.of(
+                "role", "ROLE_ADMIN",
+                "id", 123
+        );
 
-        when(userDetails.getUsername()).thenReturn("expiredUser");
+        String token = generateValidToken(extraClaims);
 
-        String token = jwtService.generateToken(userDetails);
+        // Act
+        String extractedRole =
+                jwtService.extractClaim(token, c -> c.get("role", String.class));
+        Integer extractedId =
+                jwtService.extractClaim(token, c -> c.get("id", Integer.class));
 
-        // Act & Assert
-        assertThatThrownBy(() -> jwtService.isTokenValid(token, userDetails))
-                .isInstanceOf(io.jsonwebtoken.ExpiredJwtException.class);
+        // Assert
+        assertThat(extractedRole).isEqualTo("ROLE_ADMIN");
+        assertThat(extractedId).isEqualTo(123);
     }
 }

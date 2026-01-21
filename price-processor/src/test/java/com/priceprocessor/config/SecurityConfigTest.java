@@ -54,12 +54,6 @@ class SecurityConfigTest {
     private ProductService productService;
 
     @Test
-    void shouldAllowAccessToAuthEndpointsWithoutToken() throws Exception {
-        mockMvc.perform(post("/api/auth/register"))
-                .andExpect(status().is(not(403)));
-    }
-
-    @Test
     void shouldAllowAccessToActuatorEndpoints() throws Exception {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().is(not(403)));
@@ -72,12 +66,13 @@ class SecurityConfigTest {
     }
 
     @Test
-    void shouldReturnCorsHeadersForAllowedOrigin() throws Exception {
-        mockMvc.perform(options("/api/auth/register")
+    void shouldReturnCorsHeadersForProductsEndpoint() throws Exception {
+        mockMvc.perform(options("/api/products")
                         .header("Origin", "http://localhost:4200")
-                        .header("Access-Control-Request-Method", "POST"))
+                        .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Access-Control-Allow-Origin"))
                 .andExpect(header().exists("Access-Control-Allow-Methods"));
     }
+
 }
