@@ -16,8 +16,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "spring.cloud.gcp.sql.enabled=false",
-        "spring.cloud.gcp.core.enabled=false",
         "spring.datasource.url=jdbc:h2:mem:testdb"
 })
 @AutoConfigureMockMvc

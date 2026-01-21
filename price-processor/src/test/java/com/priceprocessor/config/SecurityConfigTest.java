@@ -15,16 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "spring.cloud.gcp.sql.enabled=false",
-        "spring.cloud.gcp.core.enabled=false",
         "management.stackdriver.metrics.export.enabled=false",
-        "spring.cloud.gcp.pubsub.enabled=false",
-        "spring.cloud.gcp.storage.enabled=false",
         "spring.datasource.url=jdbc:h2:mem:testdb",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",

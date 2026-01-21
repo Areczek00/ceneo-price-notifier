@@ -7,19 +7,16 @@ import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.security.Key;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class JwtServiceTest {
@@ -31,7 +28,6 @@ class JwtServiceTest {
     private String username;
 
     private static final String SECRET_KEY = "NDIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 godzina
 
     @BeforeEach
     void setUp() {
@@ -40,7 +36,8 @@ class JwtServiceTest {
         ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_KEY);
         signingKey = Keys.hmacShaKeyFor(
                 Decoders.BASE64.decode(SECRET_KEY)
-        );    }
+        );
+    }
 
     private String generateValidToken(long milis) {
         return Jwts.builder()
@@ -92,7 +89,8 @@ class JwtServiceTest {
         String token = generateValidToken(60000);
 
         // Assert
-        assertThat(jwtService.isTokenValid(token)).isTrue();    }
+        assertThat(jwtService.isTokenValid(token)).isTrue();
+    }
 
     @Test
     void shouldInvalidateExpiredToken() {

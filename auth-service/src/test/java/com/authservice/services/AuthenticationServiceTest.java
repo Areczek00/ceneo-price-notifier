@@ -8,8 +8,6 @@ import com.authservice.exceptions.UserAlreadyExistsException;
 import com.authservice.models.Role;
 import com.authservice.models.User;
 import com.authservice.repositories.UserRepository;
-import com.authservice.services.JwtService;
-import com.authservice.services.AuthMetricsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
