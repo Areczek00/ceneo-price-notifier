@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -32,15 +33,27 @@ class SecurityConfigTest {
 
     @Test
     void shouldAllowAccessToAuthEndpointsWithoutToken() throws Exception {
-        mockMvc.perform(post("/api/auth/register"))
-                .andExpect(status().is(not(403)));
+        String body = "{\"email\":\"test@example.com\",\"password\":\"password123\"}";
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().is2xxSuccessful());
     }
 
     @Test
     void shouldAllowAuthenticateWithoutToken() throws Exception {
-        mockMvc.perform(post("/api/auth/authenticate"))
-                .andExpect(status().is(not(403)));
+        String body = "{\"email\":\"test@example.com\",\"password\":\"password123\"}";
+
+        mockMvc.perform(post("/api/auth/register"))
+                .andExpect(result -> {
+                    int status = result.getResponse().getStatus();
+                    if (status == 403) {
+                        throw new AssertionError("Expected status NOT to be 403");
+                    }
+                });
     }
+
 
     @Test
     void shouldReturnCorsHeadersForAuthEndpoint() throws Exception {

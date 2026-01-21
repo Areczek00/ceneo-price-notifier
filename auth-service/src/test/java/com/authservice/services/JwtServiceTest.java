@@ -41,8 +41,6 @@ class JwtServiceTest {
                 .role(Role.ROLE_USER)
                 .build();
 
-        when(userDetails.getUsername()).thenReturn(user.getEmail());
-
         // Act
         String token = jwtService.generateToken(user);
         Claims claims = Jwts.parserBuilder()
