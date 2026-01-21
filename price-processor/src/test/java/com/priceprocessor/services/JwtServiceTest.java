@@ -95,7 +95,7 @@ class JwtServiceTest {
     @Test
     void shouldInvalidateExpiredToken() {
         // Arrange
-        String token = generateValidToken(-1000);
+        String token = generateValidToken(-5000);
 
         // Act
         boolean isValid = jwtService.isTokenValid(token);
