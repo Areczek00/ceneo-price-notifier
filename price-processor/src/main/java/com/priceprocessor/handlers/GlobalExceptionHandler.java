@@ -22,30 +22,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        String detailedMessage = ex.getBindingResult()
-                .getAllErrors()
-                .stream()
-                .map(error -> {
-                    String fieldName = ((FieldError) error).getField();
-                    String errorMessage = error.getDefaultMessage();
-                    return fieldName + ": " + errorMessage;
-                })
-                .collect(Collectors.joining(", "));
-
-        log.warn("Validation failed: {}", detailedMessage);
-
-        ApiErrorResponse error = new ApiErrorResponse(
-                "Validation failed: " + detailedMessage,
-                ErrorCode.VALIDATION_FAILED,
-                HttpStatus.BAD_REQUEST.value(),
-                LocalDateTime.now()
-        );
-
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(ProductNotFoundException.class)
     public ResponseEntity<ApiErrorResponse> handleProductNotFound(ProductNotFoundException ex, HttpServletRequest request) {
         log.info("Resource not found: {} | URL: {}", ex.getMessage(), request.getRequestURI());
