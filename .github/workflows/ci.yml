@@ -19,6 +19,7 @@ jobs:
 
       - name: Run tests
         run: |
+          cd price-processor
           mvn test
           docker compose down
 
