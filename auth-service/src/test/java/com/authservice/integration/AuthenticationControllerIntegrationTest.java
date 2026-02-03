@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +29,27 @@ class AuthenticationControllerIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Test
+    void shouldAuthenticateUserSuccessfully() throws Exception {
+        String email = "login-" + UUID.randomUUID() + "@test.com";
+
+        RegisterRequest register = new RegisterRequest(email, "password123");
+
+        mockMvc.perform(post("/api/auth/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(register)))
+                .andExpect(status().is2xxSuccessful());
+
+        AuthenticationRequest authRequest =
+                new AuthenticationRequest(email, "password123");
+
+        mockMvc.perform(post("/api/auth/authenticate")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authRequest)))
+                .andExpect(status().is2xxSuccessful());
+    }
+
 
     @Test
     void shouldRegisterUserSuccessfully() throws Exception {
@@ -46,26 +69,6 @@ class AuthenticationControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void shouldAuthenticateUserSuccessfully() throws Exception {
-        // Rejestracja
-        RegisterRequest register = new RegisterRequest("login@example.com", "password123");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(register)))
-                .andExpect(status().is2xxSuccessful());
-
-        // Logowanie
-        AuthenticationRequest authRequest = new AuthenticationRequest("login@example.com","password123");
-
-
-        mockMvc.perform(post("/api/auth/authenticate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authRequest)))
-                .andExpect(status().is2xxSuccessful());
     }
 
     @Test
