@@ -27,7 +27,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/auth/register",
                                 "/api/auth/authenticate",
-                                "/error"
+                                "/error",
+                                "/actuator/**"
                         ).permitAll()
                         .anyRequest().denyAll()
                 );
