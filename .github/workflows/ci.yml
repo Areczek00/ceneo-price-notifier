@@ -17,13 +17,6 @@ jobs:
           docker compose -f docker-compose.test.yml up -d --build
           sleep 25
 
-      - name: Wait for auth-service to be healthy
-        run: |
-          until curl -s http://localhost:8081/actuator/health | grep UP; do
-            echo "Waiting for auth-service..."
-            sleep 5
-          done
-
       - name: Run tests
         run: |
           mvn test
