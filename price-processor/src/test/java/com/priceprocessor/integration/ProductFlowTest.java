@@ -27,7 +27,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 )
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ProductFlowIT {
+class ProductFlowTest {
 
     @MockBean
     NotificationProducer notificationProducer;
