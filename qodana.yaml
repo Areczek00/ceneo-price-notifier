@@ -44,12 +44,6 @@ failureConditions:
     fresh: 60
     total: 40
 
-exclude:
-  - name: All
-    paths:
-      - target/**
-      - **/generated/**
-      - **/*Test.java
 #Qodana supports other languages, for example, Python, JavaScript, TypeScript, Go, C#, PHP
 #For all supported languages see https://www.jetbrains.com/help/qodana/linters.html
 linter: jetbrains/qodana-jvm-community:2025.3
