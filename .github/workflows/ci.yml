@@ -31,7 +31,7 @@ jobs:
           docker compose down
 
       - name: OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@v3
+        uses: dependency-check/Dependency-Check_Action@main
         with:
           project: "ceneo-price-notifier"
           path: "."
