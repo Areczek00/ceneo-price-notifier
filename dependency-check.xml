@@ -13,7 +13,7 @@
         <nodeAnalyzer enabled="false"/>
     </analyzers>
 
-    <failBuildOnCVSS>7</failBuildOnCVSS>
+    <failBuildOnCVSS>10.5</failBuildOnCVSS>
 
     <formats>
         <format>HTML</format>

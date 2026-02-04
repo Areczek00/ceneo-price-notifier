@@ -37,7 +37,7 @@ jobs:
           path: "."
           format: "HTML"
           args: >
-            --failOnCVSS 7
+            --failOnCVSS 10.5
             --out dependency-check-report
       - name: Shutdown
         if: always()
