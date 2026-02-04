@@ -39,6 +39,13 @@ jobs:
           args: >
             --failOnCVSS 10.5
             --out dependency-check-report
+
+      - name: Upload OWASP Dependency-Check report
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-check-report
+          path: reports/dependency-check-report.html
+
       - name: Shutdown
         if: always()
         run: docker compose down
