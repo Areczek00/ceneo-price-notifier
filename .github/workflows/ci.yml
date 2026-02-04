@@ -31,13 +31,14 @@ jobs:
           docker compose down
 
       - name: OWASP Dependency Check
-        uses: dependency-check/Dependency-Check_Action@v3.0.3
+        uses: dependency-check/Dependency-Check_Action@v3
         with:
           project: "ceneo-price-notifier"
           path: "."
           format: "HTML"
           args: >
             --failOnCVSS 7
+            --config dependency-check.xml
             --out dependency-check-report
 
       - name: Qodana Scan
