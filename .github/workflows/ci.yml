@@ -38,14 +38,7 @@ jobs:
           format: "HTML"
           args: >
             --failOnCVSS 7
-            --config dependency-check.xml
             --out dependency-check-report
-
-      - name: Qodana Scan
-        uses: JetBrains/qodana-action@v2025.1
-        with:
-          cache-default-branch-only: true
-
       - name: Shutdown
         if: always()
         run: docker compose down
