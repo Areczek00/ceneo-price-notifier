@@ -15,16 +15,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = {
-        "spring.cloud.gcp.sql.enabled=false",
-        "spring.cloud.gcp.core.enabled=false",
         "management.stackdriver.metrics.export.enabled=false",
-        "spring.cloud.gcp.pubsub.enabled=false",
-        "spring.cloud.gcp.storage.enabled=false",
         "spring.datasource.url=jdbc:h2:mem:testdb",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
@@ -54,12 +49,6 @@ class SecurityConfigTest {
     private ProductService productService;
 
     @Test
-    void shouldAllowAccessToAuthEndpointsWithoutToken() throws Exception {
-        mockMvc.perform(post("/api/auth/register"))
-                .andExpect(status().is(not(403)));
-    }
-
-    @Test
     void shouldAllowAccessToActuatorEndpoints() throws Exception {
         mockMvc.perform(get("/actuator/health"))
                 .andExpect(status().is(not(403)));
@@ -72,12 +61,13 @@ class SecurityConfigTest {
     }
 
     @Test
-    void shouldReturnCorsHeadersForAllowedOrigin() throws Exception {
-        mockMvc.perform(options("/api/auth/register")
+    void shouldReturnCorsHeadersForProductsEndpoint() throws Exception {
+        mockMvc.perform(options("/api/products")
                         .header("Origin", "http://localhost:4200")
-                        .header("Access-Control-Request-Method", "POST"))
+                        .header("Access-Control-Request-Method", "GET"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Access-Control-Allow-Origin"))
                 .andExpect(header().exists("Access-Control-Allow-Methods"));
     }
+
 }

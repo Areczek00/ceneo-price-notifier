@@ -1,13 +1,13 @@
-package com.priceprocessor.services;
+package com.authservice.services;
 
-import com.priceprocessor.dtos.auth.AuthenticationRequest;
-import com.priceprocessor.dtos.auth.AuthenticationResponse;
-import com.priceprocessor.dtos.auth.RegisterRequest;
-import com.priceprocessor.exceptions.InvalidCredentialsException;
-import com.priceprocessor.exceptions.UserAlreadyExistsException;
-import com.priceprocessor.models.Role;
-import com.priceprocessor.models.User;
-import com.priceprocessor.repositories.UserRepository;
+import com.authservice.dtos.auth.AuthenticationRequest;
+import com.authservice.dtos.auth.AuthenticationResponse;
+import com.authservice.dtos.auth.RegisterRequest;
+import com.authservice.exceptions.InvalidCredentialsException;
+import com.authservice.exceptions.UserAlreadyExistsException;
+import com.authservice.models.Role;
+import com.authservice.models.User;
+import com.authservice.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -38,7 +38,7 @@ class AuthenticationServiceTest {
     @Mock
     private AuthenticationManager authenticationManager;
     @Mock
-    private MetricsService metricsService;
+    private AuthMetricsService metricsService;
 
     @InjectMocks
     private AuthenticationService service;
@@ -68,7 +68,7 @@ class AuthenticationServiceTest {
         User savedUser = userCaptor.getValue();
         assertThat(savedUser.getEmail()).isEqualTo(email);
         assertThat(savedUser.getPassword()).isEqualTo(encodedPassword);
-        assertThat(savedUser.getRole()).isEqualTo(Role.USER);
+        assertThat(savedUser.getRole()).isEqualTo(Role.ROLE_USER);
     }
 
     @Test
@@ -99,7 +99,7 @@ class AuthenticationServiceTest {
         User user = User.builder()
                 .email(email)
                 .password("encoded_pass")
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
 
         when(repository.findByEmail(email)).thenReturn(Optional.of(user));

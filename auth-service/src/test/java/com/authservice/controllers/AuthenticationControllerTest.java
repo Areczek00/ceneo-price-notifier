@@ -1,25 +1,25 @@
-package com.priceprocessor.controllers;
+package com.authservice.controllers;
 
+import com.authservice.dtos.auth.AuthenticationRequest;
+import com.authservice.dtos.auth.AuthenticationResponse;
+import com.authservice.dtos.auth.RegisterRequest;
+import com.authservice.exceptions.InvalidCredentialsException;
+import com.authservice.exceptions.UserAlreadyExistsException;
+import com.authservice.services.AuthenticationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.priceprocessor.dtos.auth.AuthenticationRequest;
-import com.priceprocessor.dtos.auth.AuthenticationResponse;
-import com.priceprocessor.dtos.auth.RegisterRequest;
-import com.priceprocessor.exceptions.InvalidCredentialsException;
-import com.priceprocessor.exceptions.UserAlreadyExistsException;
-import com.priceprocessor.services.AuthenticationService;
-import com.priceprocessor.services.JwtService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AuthenticationController.class, properties = {
         "spring.cloud.gcp.sql.enabled=false",
@@ -33,9 +33,6 @@ class AuthenticationControllerTest {
 
     @MockitoBean
     private AuthenticationService service;
-
-    @MockitoBean
-    private JwtService jwtService;
 
     @Autowired
     private ObjectMapper objectMapper;

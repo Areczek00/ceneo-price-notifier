@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SERVER_PORT: 8081
+
+      APPLICATION_SECURITY_JWT_SECRET_KEY: ZG9nbGFyZ2VzdHNpbmtjaGllZmZyZWVmaW5hbHByaXZhdGV0ZWxscHJpZGVzaXplYnU=
+      APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  price-processor:
+    build: ./price-processor
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+    depends_on:
+      auth-service:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
