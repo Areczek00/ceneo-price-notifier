@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+    container_name: auth_service_test
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SERVER_PORT: 8081
+      APPLICATION_SECURITY_JWT_SECRET_KEY: ZG9nbGFyZ2VzdHNpbmtjaGllZmZyZWVmaW5hbHByaXZhdGV0ZWxscHJpZGVzaXplYnU=
+      APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10

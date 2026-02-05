@@ -14,11 +14,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,9 +27,6 @@ class JwtAuthenticationFilterTest {
     @Mock
     private JwtService jwtService;
 
-    @Mock
-    private UserDetailsService userDetailsService;
-
     @InjectMocks
     private JwtAuthenticationFilter jwtFilter;
 
@@ -41,8 +36,6 @@ class JwtAuthenticationFilterTest {
     private HttpServletResponse response;
     @Mock
     private FilterChain filterChain;
-    @Mock
-    private UserDetails userDetails;
 
     @BeforeEach
     void setUp() {
@@ -90,20 +83,21 @@ class JwtAuthenticationFilterTest {
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(jwtService.extractUsername(token)).thenReturn(userEmail);
-        when(userDetailsService.loadUserByUsername(userEmail)).thenReturn(userDetails);
-        when(jwtService.isTokenValid(token, userDetails)).thenReturn(true);
-        when(userDetails.getAuthorities()).thenReturn(Collections.emptyList());
-
+        when(jwtService.extractRoles(token)).thenReturn(List.of("ROLE_USER"));
+        when(jwtService.isTokenValid(token)).thenReturn(true);
         // Act
         jwtFilter.doFilterInternal(request, response, filterChain);
-
         // Assert
         verify(filterChain).doFilter(request, response);
 
         var auth = SecurityContextHolder.getContext().getAuthentication();
         assertNotNull(auth);
         assertInstanceOf(UsernamePasswordAuthenticationToken.class, auth);
-        assertEquals(userDetails, auth.getPrincipal());
+        assertEquals(userEmail, auth.getPrincipal());
+        assertTrue(
+                auth.getAuthorities().stream()
+                        .anyMatch(a -> a.getAuthority().equals("ROLE_USER"))
+        );
     }
 
     @Test
@@ -114,8 +108,7 @@ class JwtAuthenticationFilterTest {
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(jwtService.extractUsername(token)).thenReturn(userEmail);
-        when(userDetailsService.loadUserByUsername(userEmail)).thenReturn(userDetails);
-        when(jwtService.isTokenValid(token, userDetails)).thenReturn(false);
+        when(jwtService.isTokenValid(token)).thenReturn(false);
 
         // Act
         jwtFilter.doFilterInternal(request, response, filterChain);
@@ -124,4 +117,40 @@ class JwtAuthenticationFilterTest {
         verify(filterChain).doFilter(request, response);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
+
+    @Test
+    void shouldNotOverrideExistingAuthentication() throws Exception {
+        var existingAuth = new UsernamePasswordAuthenticationToken(
+                "existing@user.com",
+                null,
+                List.of()
+        );
+        SecurityContextHolder.getContext().setAuthentication(existingAuth);
+
+        when(request.getHeader("Authorization"))
+                .thenReturn("Bearer valid.jwt.token");
+
+        jwtFilter.doFilterInternal(request, response, filterChain);
+
+        assertSame(
+                existingAuth,
+                SecurityContextHolder.getContext().getAuthentication()
+        );
+    }
+
+    @Test
+    void shouldNotAuthenticate_WhenUsernameIsNull() throws Exception {
+        when(request.getHeader("Authorization"))
+                .thenReturn("Bearer token");
+        when(jwtService.extractUsername("token"))
+                .thenReturn(null);
+        when(jwtService.extractRoles("token"))
+                .thenReturn(List.of("ROLE_USER"));
+
+        jwtFilter.doFilterInternal(request, response, filterChain);
+
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
+        verify(filterChain).doFilter(request, response);
+    }
+
 }

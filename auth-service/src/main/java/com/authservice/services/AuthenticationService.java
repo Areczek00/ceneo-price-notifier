@@ -1,13 +1,13 @@
-package com.priceprocessor.services;
+package com.authservice.services;
 
-import com.priceprocessor.dtos.auth.AuthenticationRequest;
-import com.priceprocessor.dtos.auth.AuthenticationResponse;
-import com.priceprocessor.dtos.auth.RegisterRequest;
-import com.priceprocessor.exceptions.InvalidCredentialsException;
-import com.priceprocessor.exceptions.UserAlreadyExistsException;
-import com.priceprocessor.models.Role;
-import com.priceprocessor.models.User;
-import com.priceprocessor.repositories.UserRepository;
+import com.authservice.dtos.auth.AuthenticationRequest;
+import com.authservice.dtos.auth.AuthenticationResponse;
+import com.authservice.dtos.auth.RegisterRequest;
+import com.authservice.exceptions.InvalidCredentialsException;
+import com.authservice.exceptions.UserAlreadyExistsException;
+import com.authservice.models.Role;
+import com.authservice.models.User;
+import com.authservice.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final MetricsService metricsService;
+    private final AuthMetricsService metricsService;
 
     public AuthenticationResponse register(RegisterRequest request) {
         validateUniqueEmail(request.email());
@@ -33,7 +33,7 @@ public class AuthenticationService {
         var user = User.builder()
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
-                .role(Role.USER)
+                .role(Role.ROLE_USER)
                 .build();
         repository.save(user);
 

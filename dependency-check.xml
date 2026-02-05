@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dependency-check>
+    <scan>
+        <scanSet>
+            <filePath>auth-service</filePath>
+            <filePath>price-processor</filePath>
+        </scanSet>
+    </scan>
+
+    <analyzers>
+        <assemblyAnalyzer enabled="false"/>
+        <pythonAnalyzer enabled="false"/>
+        <nodeAnalyzer enabled="false"/>
+    </analyzers>
+
+    <failBuildOnCVSS>10.5</failBuildOnCVSS>
+
+    <formats>
+        <format>HTML</format>
+        <format>JSON</format>
+    </formats>
+</dependency-check>

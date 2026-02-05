@@ -1,4 +1,4 @@
-package com.priceprocessor.dtos.auth;
+package com.authservice.dtos.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

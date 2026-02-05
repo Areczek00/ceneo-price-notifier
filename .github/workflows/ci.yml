@@ -1,0 +1,51 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & run services
+        run: |
+          docker compose -f docker-compose.test.yml up -d --build
+
+      - name: Wait for auth-service health
+        run: |
+          echo "Waiting for auth-service to be healthy..."
+          until curl -fs http://localhost:8081/actuator/health | grep -q '"UP"'; do
+            sleep 3
+          done
+          echo "auth-service is UP"
+
+      - name: Run tests
+        run: |
+          cd price-processor
+          mvn test
+          docker compose down
+
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: "ceneo-price-notifier"
+          path: "."
+          format: "HTML"
+          args: >
+            --failOnCVSS 10.5
+            --out dependency-check-report
+
+      - name: Upload OWASP Dependency-Check report
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-check-report
+          path: reports/dependency-check-report.html
+
+      - name: Shutdown
+        if: always()
+        run: docker compose down
