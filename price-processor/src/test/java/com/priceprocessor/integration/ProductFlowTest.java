@@ -50,7 +50,7 @@ class ProductFlowTest {
 
     @Test
     void fullFlow_register_login_add_delete_product() {
-        // 1️⃣ register
+        // Rejestracja
         restTemplate.postForEntity(
                 AUTH_BASE + "/register",
                 json("""
@@ -64,7 +64,7 @@ class ProductFlowTest {
                 Void.class
         );
 
-        // 2️⃣ login
+        // Login
         ResponseEntity<Map> login = restTemplate.postForEntity(
                 AUTH_BASE + "/authenticate",
                 json("""
@@ -82,7 +82,7 @@ class ProductFlowTest {
         auth.setBearerAuth(jwt);
         auth.setContentType(MediaType.APPLICATION_JSON);
 
-        // 3️⃣ add product
+        // Dodanie produktu
         ResponseEntity<Map> add = restTemplate.exchange(
                 PRODUCTS_BASE + "/search",
                 HttpMethod.POST,
@@ -95,7 +95,7 @@ class ProductFlowTest {
         assertThat(add.getStatusCode()).isEqualTo(HttpStatus.OK);
         Long productId = ((Number) add.getBody().get("id")).longValue();
 
-        // 4️⃣ get product
+        // Pobranie produktu po ID
         ResponseEntity<Map> get = restTemplate.exchange(
                 PRODUCTS_BASE + "/" + productId,
                 HttpMethod.GET,
@@ -105,7 +105,7 @@ class ProductFlowTest {
 
         assertThat(get.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        // 5️⃣ delete
+        // Usunięcie produktu
         ResponseEntity<Void> del = restTemplate.exchange(
                 PRODUCTS_BASE + "/" + productId,
                 HttpMethod.DELETE,
@@ -117,7 +117,7 @@ class ProductFlowTest {
     }
 
     @Test
-    void shouldReturn401_whenNoJwt() {
+    void shouldReturn403_whenNoJwt() {
         ResponseEntity<String> res = restTemplate.postForEntity(
                 PRODUCTS_BASE + "/search",
                 json("""
