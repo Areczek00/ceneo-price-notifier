@@ -18,6 +18,7 @@ public class PriceHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
     private LocalDateTime checkedAt;

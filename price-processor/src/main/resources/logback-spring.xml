@@ -20,6 +20,20 @@
         </appender>
     </springProfile>
 
+    <springProfile name="prod">
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>logs/application.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>7</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+            <encoder>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            </encoder>
+        </appender>
+    </springProfile>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
     </root>
@@ -31,7 +45,7 @@
         </root>
     </springProfile>
 
-    <springProfile name="cloud">
+    <springProfile name="prod">
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
         </root>

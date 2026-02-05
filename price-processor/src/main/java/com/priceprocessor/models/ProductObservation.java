@@ -29,6 +29,7 @@ public class ProductObservation {
     @Column(nullable = false)
     private String userEmail;
 
+    @Column(precision = 10, scale = 2)
     private BigDecimal currentPrice;
 
     private LocalDateTime lastCheckedAt;

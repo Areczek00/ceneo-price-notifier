@@ -10,7 +10,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: test
       SERVER_PORT: 8081
-
       APPLICATION_SECURITY_JWT_SECRET_KEY: ZG9nbGFyZ2VzdHNpbmtjaGllZmZyZWVmaW5hbHByaXZhdGV0ZWxscHJpZGVzaXplYnU=
       APPLICATION_SECURITY_JWT_EXPIRATION: 86400000
     healthcheck:

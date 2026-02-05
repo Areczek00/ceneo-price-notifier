@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @EnableScheduling
-@Profile("dev")
+@Profile({"dev", "prod"})
 @RequiredArgsConstructor
 @Slf4j
 public class LocalDevScheduler {
